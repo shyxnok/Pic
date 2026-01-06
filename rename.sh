@@ -8,7 +8,7 @@
 IMAGE_FORMATS=("jpg" "jpeg" "png" "gif" "bmp" "webp" "tiff")
 JSON_FILENAME="pic_names.json"
 TARGET_ROOT_DIR="."
-
+names=()
 # 检查md5工具
 check_md5_tool() {
     if ! command -v md5sum &> /dev/null && ! command -v md5 &> /dev/null; then
@@ -58,7 +58,7 @@ process_single_folder() {
             if [[ -f "$NEW_FILENAME" ]]; then
                 echo "警告：$FOLDER 中 $NEW_FILENAME 已存在，跳过 $BASENAME_FILE"
                 # 若需记录已存在的图片，取消下面注释
-                # echo "$NEW_FILENAME" >> "$TEMP_FILE"
+                echo "$NEW_FILENAME" >> "$TEMP_FILE"
                 continue
             fi
 
