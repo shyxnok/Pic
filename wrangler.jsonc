@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pic",
+  "compatibility_date": "2026-06-09",
+  "observability": {
+    "enabled": true
+  },
+  "assets": {
+    "directory": ".",
+    "include": ["**/*"],
+    "exclude": [".git/**", "node_modules/**", ".log"]
+  },
+  "compatibility_flags": [
+    "nodejs_compat"
+  ]
+}
