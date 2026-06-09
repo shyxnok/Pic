@@ -41,6 +41,13 @@ async function handleRequest(request) {
     return getRandomImage(folder, corsHeaders);
   }
 
+  // 图片列表 API：返回全部图片名称
+  if (pathname === "/list" || pathname === "/api/list") {
+    const folder = url.searchParams.get("folder") || "background";
+    console.log("→ 图片列表 API，文件夹:", folder);
+    return getImageList(folder, corsHeaders);
+  }
+
   // 图片代理：路径格式 /folder/filename.jpg
   if (pathname !== "/" && pathname.length > 1) {
     const imageUrl = `${RAW_BASE}${pathname}`;
@@ -56,6 +63,7 @@ async function handleRequest(request) {
         service: "Pic Random Image API",
         repo: `${GITHUB_USER}/${GITHUB_REPO}`,
         endpoints: {
+          list: "/list",
           random: "/random?folder=background",
           image: "/{folder}/{filename}",
         },
@@ -104,7 +112,7 @@ async function getRandomImage(folder, corsHeaders) {
     const imageName = images[randomIndex];
     const imageUrl = `${RAW_BASE}/${folder}/${imageName}`;
     console.log("→ 随机选中图片:", imageName);
-    const urll ="https://pic.201562.xy/"+folder+"/"+imageName
+    const urll ="https://pic.201562.xyz/"+folder+"/"+imageName
     return new Response(
       JSON.stringify({ url: urll, name: imageName, folder }),
       {
@@ -114,6 +122,48 @@ async function getRandomImage(folder, corsHeaders) {
     );
   } catch (e) {
     console.log("→ getRandomImage 异常:", e.message);
+    return new Response(
+      JSON.stringify({ error: e.message }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+}
+
+/**
+ * 图片列表：返回文件夹内全部图片名称和链接
+ */
+async function getImageList(folder, corsHeaders) {
+  try {
+    const jsonUrl = `${RAW_BASE}/${folder}/pic_names.json`;
+    console.log("→ getImageList 获取 JSON:", jsonUrl);
+    const res = await fetch(jsonUrl, {
+      signal: AbortSignal.timeout(8000),
+    });
+
+    if (!res.ok) {
+      return new Response(
+        JSON.stringify({ error: `文件夹 "${folder}" 不存在或未生成 pic_names.json` }),
+        { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const data = await res.json();
+    const images = data.image_names || [];
+    console.log("→ 图片列表数量:", images.length);
+
+    const baseUrl = `https://pic.201562.xyz`;
+    const imageUrls = images.map(name => `${baseUrl}/${folder}/${name}`);
+    const rawUrls = images.map(name => `${RAW_BASE}/${folder}/${name}`);
+
+    return new Response(
+      JSON.stringify({ folder, count: images.length, images: imageUrls, raw: rawUrls, name: images }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json; charset=utf-8" },
+      }
+    );
+  } catch (e) {
+    console.log("→ getImageList 异常:", e.message);
     return new Response(
       JSON.stringify({ error: e.message }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
