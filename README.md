@@ -1,6 +1,6 @@
 # Pic
 图床
 ```
-https://pic.shyxnok.dpdns.org/background/1.jpg
+https://pic.201562.xyz/random?folder=background
 ```
-tt
+随机图片
