@@ -112,9 +112,9 @@ async function getRandomImage(folder, corsHeaders) {
     const imageName = images[randomIndex];
     const imageUrl = `${RAW_BASE}/${folder}/${imageName}`;
     console.log("→ 随机选中图片:", imageName);
-    const urll ="https://pic.201562.xyz/"+folder+"/"+imageName
+    //const urll ="https://pic.201562.xyz/"+folder+"/"+imageName
     return new Response(
-      JSON.stringify({ url: urll, name: imageName, folder }),
+      JSON.stringify({ url: imageUrl, name: imageName, folder }),
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json", "Cache-Control": "no-cache" },
